@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -216,11 +215,22 @@ func (r *ReconcileBareMetalHost) Reconcile(request reconcile.Request) (result re
 			}
 			errStatus := r.client.Status().Update(context.TODO(), host)
 			if errStatus != nil {
-				return reconcile.Result{}, errors.Wrap(err, "Could not restore status from annotation")
+				return reconcile.Result{}, errors.Wrap(errStatus, "Could not restore status from annotation")
 			}
 			return reconcile.Result{Requeue: true}, nil
 		}
 		reqLogger.Info("No status cache found")
+	} else {
+		// The status annotation is unneeded, as the status subresource is
+		// already present. The annotation data will get outdated, so remove it.
+		if _, present := annotations[metal3v1alpha1.StatusAnnotation]; present {
+			delete(annotations, metal3v1alpha1.StatusAnnotation)
+			errStatus := r.client.Update(context.TODO(), host)
+			if errStatus != nil {
+				return reconcile.Result{}, errors.Wrap(errStatus, "Could not delete status annotation")
+			}
+			return reconcile.Result{Requeue: true}, nil
+		}
 	}
 
 	// NOTE(dhellmann): Handle a few steps outside of the phase
@@ -289,7 +299,8 @@ func (r *ReconcileBareMetalHost) Reconcile(request reconcile.Request) (result re
 		info.log.Info("saving host status",
 			"operational status", host.OperationalStatus(),
 			"provisioning state", host.Status.Provisioning.State)
-		if err = r.saveHostStatus(host); err != nil {
+		err = r.saveHostStatus(host)
+		if err != nil {
 			return reconcile.Result{}, errors.Wrap(err,
 				fmt.Sprintf("failed to save host status after %q", initialState))
 		}
@@ -799,60 +810,7 @@ func (r *ReconcileBareMetalHost) saveHostStatus(host *metal3v1alpha1.BareMetalHo
 	t := metav1.Now()
 	host.Status.LastUpdated = &t
 
-	if err := r.saveHostAnnotation(host); err != nil {
-		return err
-	}
-
-	//Refetch host again
-	obj := host.Status.DeepCopy()
-	err := r.client.Get(context.TODO(),
-		client.ObjectKey{
-			Name:      host.Name,
-			Namespace: host.Namespace,
-		},
-		host,
-	)
-	if err != nil {
-		return errors.Wrap(err, "Failed to update Status annotation")
-	}
-	host.Status = *obj
-	err = r.client.Status().Update(context.TODO(), host)
-	return err
-}
-
-func (r *ReconcileBareMetalHost) saveHostAnnotation(host *metal3v1alpha1.BareMetalHost) error {
-	//Repopulate annotation again
-	objStatus, err := r.getHostStatusFromAnnotation(host)
-	if err != nil {
-		return err
-	}
-
-	if objStatus != nil {
-		// This value is copied to avoid continually updating the annotation
-		objStatus.LastUpdated = host.Status.LastUpdated
-		if reflect.DeepEqual(host.Status, *objStatus) {
-			return nil
-		}
-	}
-
-	delete(host.Annotations, metal3v1alpha1.StatusAnnotation)
-	newAnnotation, err := marshalStatusAnnotation(&host.Status)
-	if err != nil {
-		return err
-	}
-	if host.Annotations == nil {
-		host.Annotations = make(map[string]string)
-	}
-	host.Annotations[metal3v1alpha1.StatusAnnotation] = string(newAnnotation)
-	return r.client.Update(context.TODO(), host.DeepCopy())
-}
-
-func marshalStatusAnnotation(status *metal3v1alpha1.BareMetalHostStatus) ([]byte, error) {
-	newAnnotation, err := json.Marshal(status)
-	if err != nil {
-		return []byte{}, errors.Wrap(err, "failed to marshall status annotation")
-	}
-	return newAnnotation, nil
+	return r.client.Status().Update(context.TODO(), host)
 }
 
 func unmarshalStatusAnnotation(content []byte) (*metal3v1alpha1.BareMetalHostStatus, error) {
