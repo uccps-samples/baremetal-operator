@@ -1075,7 +1075,7 @@ func (p *ironicProvisioner) Delete() (result provisioner.Result, err error) {
 	}
 
 	p.log.Info("host ready to be removed")
-	err = nodes.Delete(p.client, p.status.ID).ExtractErr()
+	err = nodes.Delete(p.client, ironicNode.UUID).ExtractErr()
 	switch err.(type) {
 	case nil:
 		p.log.Info("removed")
