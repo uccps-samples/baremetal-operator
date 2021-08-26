@@ -35,6 +35,7 @@ var (
 	softPowerOffTimeout       = time.Second * 180
 	deployKernelURL           string
 	deployRamdiskURL          string
+	forcePersistentBootDevice string
 	ironicEndpoint            string
 	inspectorEndpoint         string
 	ironicTrustedCAFile       string
@@ -127,6 +128,13 @@ func init() {
 		}
 		maxBusyHosts = value
 	}
+
+	if forcePersistentBootDevice = os.Getenv("LIVE_ISO_FORCE_PERSISTENT_BOOT_DEVICE"); forcePersistentBootDevice != "" {
+		if forcePersistentBootDevice != "Default" && forcePersistentBootDevice != "Always" && forcePersistentBootDevice != "Never" {
+			fmt.Fprintf(os.Stderr, "Invalid value for variable LIVE_ISO_FORCE_PERSISTENT_BOOT_DEVICE, must be one of Default, Always or Never")
+			os.Exit(1)
+		}
+	}
 }
 
 // Provisioner implements the provisioning.Provisioner interface
@@ -166,6 +174,7 @@ func LogStartup() {
 		"inspectorAuthType", inspectorAuth.Type,
 		"deployKernelURL", deployKernelURL,
 		"deployRamdiskURL", deployRamdiskURL,
+		"forcePersistentBootDevice", forcePersistentBootDevice,
 	)
 }
 
@@ -788,6 +797,15 @@ func (p *ironicProvisioner) setLiveIsoUpdateOptsForNode(ironicNode *nodes.Node, 
 		"image_checksum":      nil,
 	}
 	updater.SetInstanceInfoOpts(optValues, ironicNode)
+
+	driverOptValues := optionsData{"force_persistent_boot_device": "Default"}
+	if forcePersistentBootDevice != "" {
+		driverOptValues = optionsData{
+			"force_persistent_boot_device": forcePersistentBootDevice,
+		}
+	}
+	updater.SetDriverInfoOpts(driverOptValues, ironicNode)
+
 	updates = append(updates, updater.Updates...)
 
 	deployInterface := "ramdisk"
@@ -836,6 +854,12 @@ func (p *ironicProvisioner) setDirectDeployUpdateOptsForNode(ironicNode *nodes.N
 		"image_disk_format":   imageData.DiskFormat,
 	}
 	updater.SetInstanceInfoOpts(optValues, ironicNode)
+
+	driverOptValues := optionsData{
+		"force_persistent_boot_device": "Default",
+	}
+	updater.SetDriverInfoOpts(driverOptValues, ironicNode)
+
 	updates = append(updates, updater.Updates...)
 
 	deployInterface := "direct"
