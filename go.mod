@@ -8,7 +8,7 @@ require (
 	github.com/gophercloud/gophercloud v0.16.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.7.1
-	github.com/stretchr/testify v1.6.1
+	github.com/stretchr/testify v1.7.0
 	go.etcd.io/etcd v0.5.0-alpha.5.0.20200819165624-17cef6e3e9d5
 	k8s.io/api v0.20.1
 	k8s.io/apimachinery v0.20.1
@@ -16,6 +16,6 @@ require (
 	k8s.io/utils v0.0.0-20201110183641-67b214c5f920
 	sigs.k8s.io/controller-runtime v0.7.0
 	sigs.k8s.io/controller-tools v0.4.1
-	sigs.k8s.io/kustomize/kustomize/v3 v3.8.5
+	sigs.k8s.io/kustomize/kustomize/v4 v4.5.4
 	sigs.k8s.io/yaml v1.2.0
 )

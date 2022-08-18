@@ -23,7 +23,7 @@ IRONIC_HOST_IP="${IRONIC_HOST_IP}"
 MARIADB_HOST="${MARIADB_HOST:-"mariaDB"}"
 MARIADB_HOST_IP="${MARIADB_HOST_IP:-"127.0.0.1"}"
 KUBECTL_ARGS="${KUBECTL_ARGS:-""}"
-KUSTOMIZE="go run sigs.k8s.io/kustomize/kustomize/v3"
+KUSTOMIZE="go run sigs.k8s.io/kustomize/kustomize/v4"
 
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
