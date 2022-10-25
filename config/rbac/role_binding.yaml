@@ -1,26 +1,12 @@
 apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: cluster-baremetal-operator
-  namespace: openshift-machine-api
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: cluster-baremetal-operator
-subjects:
-- kind: ServiceAccount
-  name: cluster-baremetal-operator
-  namespace: openshift-machine-api
----
-apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: cluster-baremetal-operator
+  name: manager-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: cluster-baremetal-operator
+  name: manager-role
 subjects:
 - kind: ServiceAccount
-  name: cluster-baremetal-operator
-  namespace: openshift-machine-api
+  name: controller-manager
+  namespace: system

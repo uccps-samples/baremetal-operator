@@ -1,0 +1,40 @@
+{
+    "changelog":[
+        {
+            "date": "2022-10-25",
+            "version": "1.2.1-rc7-1",
+            "author": "jizongyao",
+            "changes": "update uccp api"
+        },
+        {
+            "date":"2022-5-25",
+            "version":"1.2.1-rc3-1",
+            "author":"jizongyao",
+            "changes":"use original version of net module"
+        },
+        {
+            "date":"2022-4-1",
+            "version":"1.2.0-4",
+            "author":"mahmut",
+            "changes":"modify some go.mod"
+        },
+	{
+            "date":"2022-3-31",
+            "version":"1.2.0-3",
+            "author":"mahmut",
+            "changes":"remove GOARCH"
+        },
+	{
+            "date":"2022-3-31",
+            "version":"1.2.0-2",
+            "author":"mahmut",
+            "changes":"add loonghorn support"
+        },
+	{
+            "date":"2022-3-28",
+            "version":"1.2.0-1",
+            "author":"mahmut",
+            "changes":" change the base image && add changelog && add loogarch support"
+        }
+    ]
+}

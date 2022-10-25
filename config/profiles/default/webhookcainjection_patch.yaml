@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: cluster-baremetal-webhook-service
-  namespace: openshift-machine-api
-  annotations:
-    service.beta.openshift.io/serving-cert-secret-name: cluster-baremetal-webhook-server-cert

@@ -1,14 +1,31 @@
-# See the OWNERS docs at https://go.k8s.io/owners
-
+# approval == this is a good idea /approve
 approvers:
- - andfasano
- - asalkeld
- - hardys
- - markmc
- - kirankt
- - sadasu
- - zaneb
+  - andfasano
+  - asalkeld
+  - dtantsur
+  - hardys
+  - honza
+  - kirankt
+  - mhrivnak
+  - russellb
+  - sadasu
+  - zaneb
+# review == this code is good /lgtm
+reviewers:
+  - andfasano
+  - ardaguclu
+  - asalkeld
+  - bfournie
+  - dhellmann
+  - dtantsur
+  - hardys
+  - honza
+  - kirankt
+  - mhrivnak
+  - russellb
+  - sadasu
+  - zaneb
 
 # Bugzilla Information
 component: "Bare Metal Hardware Provisioning"
-subcomponent: "cluster-baremetal-operator"
+subcomponent: "baremetal-operator"
